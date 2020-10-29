@@ -6,12 +6,16 @@ import titoRouter from './routes/tito';
 import verifyRouter from './routes/verify';
 
 const app = express();
+const router = express.Router();
 
 app.use(cors());
 app.use(json());
 
-app.use('/discord', discordRouter);
-app.use('/tito', titoRouter);
-app.use('/verify', verifyRouter);
+router.use('/discord', discordRouter);
+router.use('/tito', titoRouter);
+router.use('/verify', verifyRouter);
+
+app.use('/', router);
+app.use('/api', router);
 
 export default app;

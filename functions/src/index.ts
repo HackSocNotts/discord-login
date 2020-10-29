@@ -5,4 +5,4 @@ admin.initializeApp();
 
 import app from './app';
 
-export const api = functions.region('europe-west2').https.onRequest(app);
+export const api = functions.region('us-central1').https.onRequest(app);
