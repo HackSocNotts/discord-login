@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Nullable } from '../types/utils';
+import { sanitizePhone } from '../utilities/sanitizePhone';
 import { Ticket } from '../types/Ticket';
 
 class TitoService {
@@ -41,6 +42,21 @@ class TitoService {
       }
 
       return null;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getTicket(slug: string): Promise<Ticket & { phoneNumber: string }> {
+    try {
+      const response = await this.instance.get<{ ticket: Ticket & { responses: { 'phone-number': string } } }>(
+        `${this.organization}/${this.event}/tickets/${slug}`,
+      );
+
+      return {
+        ...response.data.ticket,
+        phoneNumber: sanitizePhone(response.data.ticket.responses['phone-number']),
+      };
     } catch (e) {
       throw e;
     }

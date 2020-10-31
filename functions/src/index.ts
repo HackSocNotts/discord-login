@@ -3,6 +3,8 @@ import * as functions from 'firebase-functions';
 
 admin.initializeApp();
 
+import * as tito from './callable/tito';
 import app from './app';
 
 export const api = functions.region('us-central1').https.onRequest(app);
+export const titoLookup = functions.region('eu-west2').https.onCall(tito.lookup);
