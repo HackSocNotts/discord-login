@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Ticket } from '../types/Ticket';
 import TitoService from '../services/tito';
-import { UserWithoutID } from '../types/User';
+import { User } from '../types/User';
 
 const router = Router();
 const db = firestore();
@@ -58,7 +58,8 @@ router.post('/ticket/:reference/createUser', async (req: Request, res: Response)
 
     const fullTicket = await titoInstance.getTicket(ticket.slug);
 
-    const newUser: UserWithoutID = {
+    const newUser: User = {
+      uid: ticket.slug,
       ticketSlug: ticket.slug,
       ticketReference: reference,
       phoneNumber: fullTicket.phoneNumber,
@@ -67,7 +68,6 @@ router.post('/ticket/:reference/createUser', async (req: Request, res: Response)
       lastName: ticket.last_name,
       fullName: ticket.name,
       verified: false,
-      discordSnowflake: undefined,
     };
 
     const user = await createUser(newUser);

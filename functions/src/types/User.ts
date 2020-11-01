@@ -1,4 +1,4 @@
-import { Optional } from './utils';
+import { AccessTokenObject } from './Discord';
 
 export interface User {
   uid: string;
@@ -9,8 +9,11 @@ export interface User {
   firstName: string;
   lastName: string;
   fullName: string;
-  discordSnowflake: Optional<string>;
   verified: boolean;
 }
 
-export type UserWithoutID = Omit<User, 'uid'>;
+export type EmptyUser = Pick<User, 'uid'>;
+
+export interface UserWithAccessToken extends User {
+  accessToken: AccessTokenObject;
+}
