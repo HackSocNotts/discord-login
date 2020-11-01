@@ -1,5 +1,5 @@
-import * as Twilio from 'twilio';
 import { config } from 'firebase-functions';
+import Twilio from 'twilio';
 import { VerificationStatus } from '../types/Twilio';
 
 const client = Twilio(config().twilio.account_sid, config().twilio.auth_token);

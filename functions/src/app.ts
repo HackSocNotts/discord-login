@@ -1,6 +1,6 @@
-import * as cors from 'cors';
-import * as express from 'express';
+import cors from 'cors';
 import discordRouter from './routes/discord';
+import express from 'express';
 import { json } from 'body-parser';
 import titoRouter from './routes/tito';
 import verifyRouter from './routes/verify';
