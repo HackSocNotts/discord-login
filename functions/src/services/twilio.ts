@@ -56,16 +56,16 @@ export const getVerificationStatus = async (sid: string): Promise<VerificationSt
 };
 
 /**
- * Validates a code against the provided sid
+ * Validates a code against the provided phone number
  *
- * @param sid verification sid
+ * @param to verification phone number
  * @param code user provided code
  * @returns the verification status
  */
-export const checkVerification = async (sid: string, code: string): Promise<VerificationStatus> => {
+export const checkVerification = async (to: string, code: string): Promise<VerificationStatus> => {
   try {
     const { status } = await verifyClientService().verificationChecks.create({
-      verificationSid: sid,
+      to,
       code,
     });
 

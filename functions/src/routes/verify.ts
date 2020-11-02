@@ -1,7 +1,9 @@
 import { checkVerification, getVerificationStatus, startVerifyViaSms } from '../services/twilio';
+import { getUser, updateUser } from '../services/db';
 import { Request, Response } from 'firebase-functions';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { VerificationStatus } from '../types/Twilio';
 
 const router = Router();
 
@@ -12,12 +14,28 @@ router.get('/', (_req: Request, res: Response) => {
 /**
  * Start a verification
  */
-router.post('/:phone_number', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
-    const sid = await startVerifyViaSms(req.params.phone_number);
-    res.json({ sid });
+    if (!req.headers.authorization) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
+
+    const user = await getUser(req.headers.authorization);
+
+    if (!user) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
+
+    if (!user.phoneNumber) {
+      console.log(user);
+      return res.status(StatusCodes.FORBIDDEN).json({ error: true, message: 'No ticket assigned to user' });
+    }
+
+    const sid = await startVerifyViaSms(user.phoneNumber);
+    return res.json({ sid });
   } catch (e) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
+    console.error(e);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
   }
 });
 
@@ -36,12 +54,33 @@ router.get('/:vid', async (req: Request, res: Response) => {
 /**
  * Verify with code
  */
-router.put('/:vid', async (req: Request, res: Response) => {
+router.put('/', async (req: Request, res: Response) => {
   try {
-    const status = await checkVerification(req.params.vid, req.body.code);
-    res.json({ status });
+    if (!req.headers.authorization) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
+
+    const user = await getUser(req.headers.authorization);
+
+    if (!user) {
+      return res.status(StatusCodes.UNAUTHORIZED).send();
+    }
+
+    if (!user.phoneNumber) {
+      return res.status(StatusCodes.FORBIDDEN).json({ error: true, message: 'No ticket assigned to user' });
+    }
+
+    const status = await checkVerification(user.phoneNumber, req.body.code);
+
+    if (status === VerificationStatus.APPROVED) {
+      await updateUser(req.headers.authorization, {
+        verified: true,
+      });
+    }
+
+    return res.json({ status });
   } catch (e) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
   }
 });
 
