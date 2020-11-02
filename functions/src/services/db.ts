@@ -1,5 +1,7 @@
 import { auth, firestore } from 'firebase-admin';
-import { User, UserWithoutID } from '../types/User';
+import { decryptAccessTokenObject, encryptAccessTokenObject } from '../utilities/encryptAccessToken';
+import { EmptyUser, EncryptedUser, User, UserWithAccessToken } from '../types/User';
+import { AccessTokenObject } from '../types/Discord';
 
 const db = firestore();
 db.settings({ ignoreUndefinedProperties: true });
@@ -82,6 +84,45 @@ export const updateUser = async (uid: string, partialUser: Partial<User>): Promi
     const updatedUser = ((await userDoc.get()).data() as unknown) as User;
 
     return updatedUser;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const storeAccessToken = async (uid: string, accessToken: AccessTokenObject): Promise<void> => {
+  try {
+    const userDoc = db.collection('users').doc(uid);
+
+    if (!(await userDoc.get()).exists) {
+      throw new UserDoesNotExistError(uid);
+    }
+
+    await userDoc.update({
+      accessToken: encryptAccessTokenObject(accessToken),
+    });
+
+    return;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const getAccessToken = async (uid: string): Promise<AccessTokenObject | false> => {
+  try {
+    const userDoc = db.collection('users').doc(uid);
+    const userDocData = await userDoc.get();
+
+    if (!userDocData.exists) {
+      throw new UserDoesNotExistError(uid);
+    }
+
+    const data = userDocData.data() as UserWithAccessToken;
+
+    if (!data.accessToken) {
+      return false;
+    }
+
+    return decryptAccessTokenObject(data.accessToken);
   } catch (e) {
     throw e;
   }
