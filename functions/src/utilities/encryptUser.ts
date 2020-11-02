@@ -1,6 +1,7 @@
 import { EncryptedUser, User } from '../types/User';
 import AES from 'crypto-js/aes';
 import { config } from 'firebase-functions';
+import CryptoJS from 'crypto-js';
 
 const KEY = config().app.user_data_key;
 
