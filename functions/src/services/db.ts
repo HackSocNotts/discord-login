@@ -54,7 +54,7 @@ export const getUser = async (uid: string): Promise<Partial<User>> => {
       throw new UserDoesNotExistError(uid);
     }
 
-    const user = (userDoc.data as unknown) as Partial<EncryptedUser>;
+    const user = (userDoc.data() as unknown) as Partial<EncryptedUser>;
 
     return decryptUserData(user);
   } catch (e) {
