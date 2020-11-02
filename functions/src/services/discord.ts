@@ -34,8 +34,8 @@ class DiscordService {
     }
   }
 
-  private serializeScopes() {
-    return this.scopes.reduce((acc, val) => acc + val + ' ', '').trim();
+  private serializeScopes(scopes?: string[]) {
+    return (scopes || this.scopes).reduce((acc, val) => acc + val + ' ', '').trim();
   }
 
   public generateRedirectURI(): string {
@@ -46,6 +46,17 @@ class DiscordService {
         redirect_uri: `${BASE_URL}/api/discord/return`,
         response_type: 'code',
         scope: this.serializeScopes(),
+      })
+    );
+  }
+
+  public generateBotRedirectURI(): string {
+    return (
+      `${this.instance.defaults.baseURL}/oauth2/authorize?` +
+      qs.stringify({
+        client_id: this.clientId,
+        scope: this.serializeScopes(['bot']),
+        permissions: 402653187,
       })
     );
   }
