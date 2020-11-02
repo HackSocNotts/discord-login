@@ -1,14 +1,16 @@
 import { auth, firestore } from 'firebase-admin';
 import { decryptAccessTokenObject, encryptAccessTokenObject } from '../utilities/encryptAccessToken';
+import { decryptUserData, encryptUserData } from '../utilities/encryptUser';
 import { EmptyUser, EncryptedUser, User, UserWithAccessToken } from '../types/User';
 import { AccessTokenObject } from '../types/Discord';
+import { userExists } from './users';
 
 const db = firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 export class UserExistsError extends Error {
-  constructor(email: string) {
-    super(`User with email ${email} already exists.`);
+  constructor(uid: string) {
+    super(`User with UID ${uid} already exists.`);
   }
 }
 
@@ -18,44 +20,33 @@ export class UserDoesNotExistError extends Error {
   }
 }
 
-export const createUser = async (user: UserWithoutID): Promise<User> => {
+export const createUser = async (user: EmptyUser | User, avatarHash?: string): Promise<User | EmptyUser> => {
   try {
-    console.debug(user);
-    // if (await auth().getUserByEmail(user.email)) {
-    //   throw new UserExistsError(user.email);
-    // }
+    const exists = await userExists(user.uid);
 
-    const newUser = await auth().createUser({
-      uid: user.ticketSlug,
-      email: user.email,
-      emailVerified: true,
-      displayName: user.fullName,
-      phoneNumber: user.phoneNumber,
+    if (exists) {
+      throw new UserExistsError(user.uid);
+    }
+
+    const photoURL = avatarHash ? `https://cdn.discordapp.com/avatars/${user.uid}/${avatarHash}.png` : undefined;
+
+    const newAuthUser = await auth().createUser({
+      ...user,
+      photoURL,
     });
 
-    await db
-      .collection('users')
-      .doc(newUser.uid)
-      .set({
-        ...user,
-        uid: newUser.uid,
-        email: newUser.email,
-        phoneNumber: newUser.phoneNumber,
-      });
+    const newUser: Partial<User> = (user as User).email ? encryptUserData(user as User) : user;
 
-    return {
-      ...user,
-      uid: newUser.uid,
-      email: newUser.email as string,
-      phoneNumber: newUser.phoneNumber as string,
-    };
+    await db.collection('users').doc(newAuthUser.uid).set(newUser);
+
+    return user;
   } catch (e) {
     console.error(e);
     throw e;
   }
 };
 
-export const getUser = async (uid: string): Promise<User> => {
+export const getUser = async (uid: string): Promise<Partial<User>> => {
   try {
     const userDoc = await db.collection('users').doc(uid).get();
 
@@ -63,15 +54,15 @@ export const getUser = async (uid: string): Promise<User> => {
       throw new UserDoesNotExistError(uid);
     }
 
-    const user = (userDoc.data as unknown) as User;
+    const user = (userDoc.data as unknown) as Partial<EncryptedUser>;
 
-    return user;
+    return decryptUserData(user);
   } catch (e) {
     throw e;
   }
 };
 
-export const updateUser = async (uid: string, partialUser: Partial<User>): Promise<User> => {
+export const updateUser = async (uid: string, partialUser: Partial<User>): Promise<Partial<User>> => {
   try {
     const userDoc = db.collection('users').doc(uid);
 
@@ -79,9 +70,9 @@ export const updateUser = async (uid: string, partialUser: Partial<User>): Promi
       throw new UserDoesNotExistError(uid);
     }
 
-    await userDoc.update(partialUser);
+    await userDoc.update(encryptUserData(partialUser));
 
-    const updatedUser = ((await userDoc.get()).data() as unknown) as User;
+    const updatedUser = ((await userDoc.get()).data() as unknown) as Partial<User>;
 
     return updatedUser;
   } catch (e) {

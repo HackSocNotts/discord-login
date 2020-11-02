@@ -12,6 +12,7 @@ export interface User {
   verified: boolean;
 }
 
+export type EncryptedUser = User;
 export type EmptyUser = Pick<User, 'uid'>;
 
 export interface UserWithAccessToken extends User {
