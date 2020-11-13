@@ -3,6 +3,7 @@ import {
   loginUser,
   loginWithCustomToken,
   authError,
+  updateProfile,
 } from "./actions";
 import { createReducer } from "@reduxjs/toolkit";
 import { FullProfile } from "../../types/Profile";
@@ -12,6 +13,7 @@ export interface AuthState {
   loggingIn: boolean;
   profile: Partial<FullProfile> | null;
   error: string | null;
+  snapshotListener: (() => void) | null;
 }
 
 const initialState: AuthState = {
@@ -19,20 +21,29 @@ const initialState: AuthState = {
   loggingIn: false,
   profile: null,
   error: null,
+  snapshotListener: null,
 };
 
 const reducer = createReducer<AuthState>(initialState, (builder) =>
   builder
-    .addCase(logoutUser, (state) => ({
+    .addCase(logoutUser.pending, (state) => ({
       ...state,
       profile: null,
       loggingIn: false,
       error: null,
     }))
-    .addCase(loginUser, (state, { payload: profile }) => ({
+    .addCase(logoutUser.fulfilled, (state) => ({
+        ...state,
+        snapshotListener: null,
+    }))
+    .addCase(loginUser.pending, (state, action) => ({
       ...state,
       loggingIn: false,
-      profile,
+      profile: action.meta.arg,
+    }))
+    .addCase(loginUser.fulfilled, (state, action) => ({
+        ...state,
+        snapshotListener: action.payload,
     }))
     .addCase(authError, (state, { payload: error }) => ({
       ...state,
@@ -46,6 +57,12 @@ const reducer = createReducer<AuthState>(initialState, (builder) =>
       ...state,
       loggingIn: false,
       error: error.message as string,
+    }))
+    .addCase(updateProfile, (state, action) => ({
+        ...state,
+        profile: {
+            ...action.payload,
+        }
     }))
 );
 

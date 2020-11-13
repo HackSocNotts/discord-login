@@ -1,10 +1,42 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { Profile } from "../../types/Profile";
+import { FullProfile, Profile } from "../../types/Profile";
 import firebase from "firebase";
+import store from "../index";
+import { AuthState } from "./reducer";
 
-export const loginUser = createAction<Profile>("auth/login");
-export const logoutUser = createAction("auth/logout");
 export const authError = createAction<string>("auth/error");
+export const updateProfile = createAction<Partial<FullProfile>>(
+  "auth/updateProfile"
+);
+
+export const logoutUser = createAsyncThunk<
+  void,
+  void,
+  { state: { auth: AuthState } }
+>("auth/logout", async (_, thunkAPI) => {
+  const { snapshotListener } = thunkAPI.getState().auth;
+  if (snapshotListener) {
+    snapshotListener();
+  }
+  return;
+});
+
+export const loginUser = createAsyncThunk<() => void, Profile>(
+  "auth/login",
+  async (profile) => {
+    try {
+      const documentReference = firebase
+        .firestore()
+        .doc(`users/${profile.uid}`);
+      const unsubscribe = documentReference.onSnapshot((snapshot) => {
+        store.dispatch(updateProfile(snapshot.data() as Partial<FullProfile>));
+      });
+      return unsubscribe;
+    } catch (e) {
+      throw e;
+    }
+  }
+);
 
 export const loginWithCustomToken = createAsyncThunk(
   "auth/loginWithCustomToken",
