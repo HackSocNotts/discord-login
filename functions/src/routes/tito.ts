@@ -38,7 +38,7 @@ router.put('/ticket/:slug/confirm', async (req: Request, res: Response) => {
       return res.status(e.httpErrorCode.status).json({ error: true, message: e.message });
     }
     console.error(e);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: true, message: e.getMessage });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: true, message: e.getMessage() });
   }
 });
 
