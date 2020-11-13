@@ -7,7 +7,8 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "watch:build": "nodemon -e ts --exec npm run build"
   },
   "engines": {
     "node": "12"
@@ -41,6 +42,7 @@
     "eslint-plugin-jsdoc": "^30.7.3",
     "eslint-plugin-prettier": "^3.1.4",
     "firebase-functions-test": "^0.2.0",
+    "nodemon": "^2.0.6",
     "prettier": "^2.1.2",
     "typescript": "^3.8.0"
   },
