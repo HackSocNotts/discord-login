@@ -40,9 +40,8 @@ export const loginWithCustomToken = createAsyncThunk(
   "auth/loginWithCustomToken",
   async (token: string) => {
     try {
-      console.log("token", token);
-      const res = await auth.signInWithCustomToken(token);
-      console.log("res", res);
+      await auth.signInWithCustomToken(token);
+      window.history.replaceState({}, document.title, "/");
       return;
     } catch (e) {
       if (e.code === "auth/custom-token-mismatch") {

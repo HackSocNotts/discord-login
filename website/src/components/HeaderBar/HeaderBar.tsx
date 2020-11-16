@@ -5,9 +5,14 @@ import Typography from "@material-ui/core/Typography";
 import useStyles from "./HeaderBar.styles";
 import HackSocIcon from "../../Icons/HackSocIcon";
 import { Button } from "@material-ui/core";
+import { useTypedSelector } from "../../store";
+import { auth } from "../../firebase";
 
 const HeaderBar: React.FC = () => {
   const classes = useStyles();
+  const { profile } = useTypedSelector((state) => state.auth);
+
+  const signOut = () => auth.signOut();
 
   return (
     <AppBar position="relative" variant="outlined">
@@ -21,9 +26,11 @@ const HeaderBar: React.FC = () => {
         >
           HackNotts Discord
         </Typography>
-        <Button color="inherit" component="a" href="/auth/logout">
-          Logout
-        </Button>
+        {profile && (
+          <Button color="inherit" onClick={signOut}>
+            Logout
+          </Button>
+        )}
       </Toolbar>
     </AppBar>
   );
