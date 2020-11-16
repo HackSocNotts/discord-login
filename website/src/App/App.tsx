@@ -7,9 +7,12 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import theme from "./theme";
 import HeaderBar from "../components/HeaderBar";
 import Footer from "../components/Footer";
+import { useTypedSelector } from "../store";
+import LoginCard from "../components/LoginCard";
 
 const App: React.FC = () => {
   const classes = useStyles();
+  const { profile } = useTypedSelector((state) => state.auth);
 
   return (
     <ThemeProvider theme={theme}>
@@ -18,7 +21,7 @@ const App: React.FC = () => {
       <Heading />
       <div className={classes.container}>
         <Container maxWidth="md" className={classes.innerContainer}>
-          Hello World
+          {!profile && <LoginCard />}
         </Container>
       </div>
       <Footer />
