@@ -6,4 +6,12 @@ export interface Profile {
 
 export interface FullProfile extends Profile {
   verified: boolean;
+  uid: string;
+  firstName: string;
+  lastName: string;
+  ticketReference: string;
+  phoneNumber: string;
+  fullName: string;
+  ticketSlug: string;
+  email: string;
 }

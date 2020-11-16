@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { createSelectorHook, createDispatchHook } from "react-redux";
+import { createSelectorHook } from "react-redux";
 import { loginUser } from "./auth";
 import reducers from "./reducers";
 
@@ -14,10 +14,9 @@ const store = configureStore({
     },
   }),
 });
+export type AppDispatch = typeof store.dispatch;
 
-export type dispatchType = typeof store.dispatch;
 
 export const useTypedSelector = createSelectorHook<RootState>();
-export const useTypedDispatch = createDispatchHook<RootState>();
 
 export default store;

@@ -8,3 +8,4 @@ import app from './app';
 
 export const api = functions.region('us-central1').https.onRequest(app);
 export const titoLookup = functions.region('europe-west2').https.onCall(tito.lookup);
+export const titoConfirm = functions.region('europe-west2').https.onCall(tito.confirmTicket);

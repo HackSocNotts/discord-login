@@ -9,6 +9,7 @@ import HeaderBar from "../components/HeaderBar";
 import Footer from "../components/Footer";
 import { useTypedSelector } from "../store";
 import LoginCard from "../components/LoginCard";
+import LookupCard from "../components/LookupCard";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -22,6 +23,7 @@ const App: React.FC = () => {
       <div className={classes.container}>
         <Container maxWidth="md" className={classes.innerContainer}>
           {!profile && <LoginCard />}
+          {profile && !profile.ticketReference && <LookupCard />}
         </Container>
       </div>
       <Footer />
