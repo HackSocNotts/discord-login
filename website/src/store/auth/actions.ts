@@ -1,8 +1,8 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { FullProfile, Profile } from "../../types/Profile";
-import firebase from "firebase";
 import store from "../index";
 import { AuthState } from "./reducer";
+import { auth, db } from "../../firebase";
 
 export const authError = createAction<string>("auth/error");
 export const updateProfile = createAction<Partial<FullProfile>>(
@@ -25,9 +25,7 @@ export const loginUser = createAsyncThunk<() => void, Profile>(
   "auth/login",
   async (profile) => {
     try {
-      const documentReference = firebase
-        .firestore()
-        .doc(`users/${profile.uid}`);
+      const documentReference = db.doc(`users/${profile.uid}`);
       const unsubscribe = documentReference.onSnapshot((snapshot) => {
         store.dispatch(updateProfile(snapshot.data() as Partial<FullProfile>));
       });
@@ -42,7 +40,9 @@ export const loginWithCustomToken = createAsyncThunk(
   "auth/loginWithCustomToken",
   async (token: string) => {
     try {
-      await firebase.auth().signInWithCustomToken(token);
+      console.log("token", token);
+      const res = await auth.signInWithCustomToken(token);
+      console.log("res", res);
       return;
     } catch (e) {
       if (e.code === "auth/custom-token-mismatch") {

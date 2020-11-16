@@ -1,8 +1,8 @@
-import firebase from "firebase";
+import { auth } from "./index";
 import store from "../store";
 import { loginUser, logoutUser } from "../store/auth";
 
-firebase.auth().onAuthStateChanged((user) => {
+auth.onAuthStateChanged((user) => {
   if (user) {
     store.dispatch(
       loginUser({
