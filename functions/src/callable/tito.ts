@@ -6,6 +6,8 @@ import { sanitizePhone } from '../utilities/sanitizePhone';
 import { Ticket } from '../types/Ticket';
 import TitoService from '../services/tito';
 
+const verify_active = config().twilio.verify_active === 'true';
+
 /**
  * Finds a single ticket by reference.
  *
@@ -68,7 +70,7 @@ export const confirmTicket = async (slug: string, context: CallableContext): Pro
       firstName: ticket.first_name,
       lastName: ticket.last_name,
       fullName: ticket.name,
-      verified: false,
+      verified: !verify_active,
       ticketReleaseId: ticket.release_id,
       ticketReleaseTitle: ticket.release_title,
       ticketUrl: ticket.unique_url,
@@ -122,7 +124,7 @@ export const refreshTicket = async (_: void, context: CallableContext): Promise<
       firstName: ticket.first_name,
       lastName: ticket.last_name,
       fullName: ticket.name,
-      verified: false,
+      verified: !verify_active,
       ticketReleaseId: ticket.release_id,
       ticketReleaseTitle: ticket.release_title,
       ticketUrl: ticket.unique_url,

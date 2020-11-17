@@ -1,12 +1,19 @@
 import { CallableContext, HttpsError } from 'firebase-functions/lib/providers/https';
 import { checkVerification, startVerifyViaSms } from '../services/twilio';
 import { getUser, updateUser } from '../services/db';
+import { config } from 'firebase-functions';
 import { VerificationStatus } from '../types/Twilio';
+
+const verify_active = config().twilio.verify_active === 'true';
 
 export const startVerification = async (_: void, context: CallableContext): Promise<void> => {
   try {
     if (!context.auth) {
       throw new HttpsError('unauthenticated', 'Not authenticated');
+    }
+
+    if (!verify_active) {
+      throw new HttpsError('permission-denied', 'Verification disabled. Please refresh your ticket.');
     }
 
     const { uid } = context.auth;
@@ -33,6 +40,10 @@ export const tryVerification = async (code: string, context: CallableContext): P
   try {
     if (!context.auth) {
       throw new HttpsError('unauthenticated', 'Not authenticated');
+    }
+
+    if (!verify_active) {
+      throw new HttpsError('permission-denied', 'Verification disabled. Please refresh your ticket.');
     }
 
     const { uid } = context.auth;

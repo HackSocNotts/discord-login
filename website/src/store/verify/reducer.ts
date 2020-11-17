@@ -20,6 +20,7 @@ const reducer = createReducer<VerifyState>(initialState, (builder) =>
     }))
     .addCase(startVerify.rejected, (state, { error }) => ({
       ...state,
+      loading: false,
       error: error.message as string,
     }))
     .addCase(startVerify.fulfilled, (state) => ({

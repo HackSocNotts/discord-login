@@ -47,6 +47,9 @@ const VerifyCard: React.FC = () => {
               "0" at the start or with "44". For all other regions please
               precede your phone number with your country code.
             </Typography>
+            <Typography>
+              To Reset the Verification Process Please Log-out and Log-in again.
+            </Typography>
           </>
         )}
         {profile && profile.verified && (
