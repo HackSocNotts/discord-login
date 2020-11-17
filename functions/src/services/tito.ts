@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { config } from 'firebase-functions';
 import { Nullable } from '../types/utils';
 import { sanitizePhone } from '../utilities/sanitizePhone';
 import { Ticket } from '../types/Ticket';
@@ -57,6 +58,29 @@ class TitoService {
         ...response.data.ticket,
         phoneNumber: sanitizePhone(response.data.ticket.responses['phone-number']),
       };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async checkIn(reference: string): Promise<void> {
+    try {
+      await axios.post(
+        `https://checkin.tito.io/checkin_lists/${config().tito.check_in_list}/checkins/`,
+        {
+          checkin: {
+            ticket_reference: reference,
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },
+      );
+
+      return;
     } catch (e) {
       throw e;
     }

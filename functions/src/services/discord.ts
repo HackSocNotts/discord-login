@@ -16,14 +16,16 @@ class DiscordService {
   private instance: AxiosInstance;
   private clientId: string;
   private clientSecret: string;
-  // private botToken: string;
+  private botToken: string;
+  private guildId: string;
   private scopes: string[];
   public accessToken: Optional<AccessTokenObject>;
 
   public constructor(accessToken?: AccessTokenObject) {
     this.clientId = config().discord.client_id;
     this.clientSecret = config().discord.client_secret;
-    // this.botToken = config().discord.bot_token;
+    this.botToken = config().discord.bot_token;
+    this.guildId = config().discord.guild_id;
     this.scopes = ['identify', 'guilds.join'];
     this.instance = axios.create({
       baseURL: 'https://discord.com/api/v6',
@@ -147,6 +149,34 @@ class DiscordService {
       } else {
         throw new Error(e);
       }
+    }
+  }
+
+  public async enroll(): Promise<void> {
+    if (!this.accessToken) {
+      throw new NoAccessTokenError();
+    }
+
+    try {
+      const profile = await this.getProfile();
+
+      const requestData = {
+        access_token: this.accessToken,
+      };
+
+      const config: AxiosRequestConfig = {
+        headers: {
+          Authorization: 'Bot ' + this.botToken,
+        },
+      };
+
+      const url = `/guilds/${this.guildId}/members/${profile.id}`;
+
+      await this.instance.put(url, requestData, config);
+
+      return;
+    } catch (e) {
+      throw e;
     }
   }
 }

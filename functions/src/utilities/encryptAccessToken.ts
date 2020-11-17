@@ -1,6 +1,7 @@
 import { AccessTokenObject } from '../types/Discord';
 import AES from 'crypto-js/aes';
 import { config } from 'firebase-functions';
+import CryptoJS from 'crypto-js';
 
 const KEY = config().discord.token_key;
 

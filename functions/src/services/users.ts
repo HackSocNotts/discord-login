@@ -20,6 +20,8 @@ export const userExists = async (uid: string): Promise<boolean> => {
       return false;
     } else if (process.env.FUNCTIONS_EMULATOR) {
       return false;
+    } else {
+      return false;
     }
     throw e;
   }

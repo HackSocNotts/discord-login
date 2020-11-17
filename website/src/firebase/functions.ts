@@ -8,3 +8,4 @@ export const titoRefresh = functions.httpsCallable("titoRefresh");
 export const getProfile = functions.httpsCallable("getProfile");
 export const verifyStart = functions.httpsCallable("verifyStart");
 export const verifyCode = functions.httpsCallable("verifyCode");
+export const joinDiscord = functions.httpsCallable("joinDiscord");

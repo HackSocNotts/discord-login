@@ -12,6 +12,7 @@ import LoginCard from "../components/LoginCard";
 import LookupCard from "../components/LookupCard";
 import TicketCard from "../components/TicketCard";
 import VerifyCard from "../components/VerifyCard";
+import DiscordCard from "../components/DiscordCard/DiscordCard";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -28,6 +29,9 @@ const App: React.FC = () => {
           {profile && !profile.ticketReference && <LookupCard />}
           {profile && profile.ticketReference && <TicketCard />}
           {profile && profile.ticketReference && <VerifyCard />}
+          {profile && profile.ticketReference && profile.verified && (
+            <DiscordCard />
+          )}
         </Container>
       </div>
       <Footer />

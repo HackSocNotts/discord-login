@@ -7,7 +7,7 @@ const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
 const auth = firebase.auth();
 const db = firebase.firestore();
-const functions = firebase.functions();
+const functions = firebase.app().functions("europe-west2");
 
 if (isDev) {
   auth.useEmulator("http://localhost:9099/");

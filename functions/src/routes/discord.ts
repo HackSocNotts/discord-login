@@ -47,6 +47,7 @@ router.get('/return', async (req: Request, res: Response) => {
   try {
     await discordService.getAccessToken(req.query.code as string);
     const user = await discordService.getProfile();
+    console.log(user);
     const exists = await userExists(user.id);
 
     if (exists) {
@@ -56,7 +57,7 @@ router.get('/return', async (req: Request, res: Response) => {
       return res.redirect('/?' + qs.stringify({ token: authToken }));
     }
 
-    const createdUser = await createUser({ uid: user.id }, user.avatar.length > 0 ? user.avatar : undefined);
+    const createdUser = await createUser({ uid: user.id }, user.avatar || undefined);
     await storeAccessToken(createdUser.uid, discordService.accessToken as AccessTokenObject);
 
     const authToken = await auth().createCustomToken(createdUser.uid);
