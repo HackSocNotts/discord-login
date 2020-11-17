@@ -4,8 +4,13 @@ import { config } from 'firebase-functions';
 import CryptoJS from 'crypto-js';
 
 const KEY = config().app.user_data_key;
+const encrypt = config().app.encrypt_user_data === 'true';
 
 export const encryptUserData = (user: Partial<User>): Partial<EncryptedUser> => {
+  if (!encrypt) {
+    return user;
+  }
+
   const encrypted: Partial<EncryptedUser> = {
     ...user,
     ...(user.phoneNumber && { phoneNumber: AES.encrypt(user.phoneNumber, KEY).toString() }),
@@ -19,6 +24,10 @@ export const encryptUserData = (user: Partial<User>): Partial<EncryptedUser> => 
 };
 
 export const decryptUserData = (user: Partial<EncryptedUser>): Partial<User> => {
+  if (!encrypt) {
+    return user;
+  }
+
   const decrypted: Partial<User> = {
     ...user,
     ...(user.phoneNumber && { phoneNumber: AES.decrypt(user.phoneNumber, KEY).toString(CryptoJS.enc.Utf8) }),

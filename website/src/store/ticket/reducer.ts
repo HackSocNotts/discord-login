@@ -1,6 +1,11 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { Ticket } from "../../types/Ticket";
-import { clearSearch, lookupTicket } from "./actions";
+import {
+  clearSearch,
+  clearTicket,
+  confirmTicket,
+  lookupTicket,
+} from "./actions";
 
 export interface TicketState {
   ticket: Ticket | null;
@@ -34,6 +39,31 @@ const reducer = createReducer<TicketState>(initialState, (builder) =>
     .addCase(clearSearch, (state) => ({
       ...state,
       ticket: null,
+    }))
+    .addCase(confirmTicket.pending, (state) => ({
+      ...state,
+      loading: true,
+    }))
+    .addCase(confirmTicket.fulfilled, (state) => ({
+      ...state,
+      loading: false,
+    }))
+    .addCase(confirmTicket.rejected, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error: error.message as string,
+    }))
+    .addCase(clearTicket.pending, (state) => ({
+      ...state,
+      loading: true,
+    }))
+    .addCase(clearTicket.fulfilled, (state) => ({
+      ...state,
+      loading: false,
+    }))
+    .addCase(clearTicket.rejected, (state) => ({
+      ...state,
+      loading: false,
     }))
 );
 

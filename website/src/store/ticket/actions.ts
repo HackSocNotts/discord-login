@@ -1,5 +1,10 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { titoConfirm, titoLookup } from "../../firebase/functions";
+import {
+  titoClear,
+  titoConfirm,
+  titoLookup,
+  titoRefresh,
+} from "../../firebase/functions";
 import { Ticket } from "../../types/Ticket";
 
 export const lookupTicket = createAsyncThunk(
@@ -41,4 +46,42 @@ export const confirmTicket = createAsyncThunk(
   }
 );
 
-export const clearSearch = createAction("ticket/clear");
+export const clearTicket = createAsyncThunk("ticket/clear", async () => {
+  try {
+    await titoClear();
+    return;
+  } catch (e) {
+    if (e.code) {
+      switch (e.code) {
+        case "permission-denied":
+          throw new Error(e.message);
+
+        case "not-found":
+          throw new Error(e.message);
+      }
+    }
+
+    throw new Error("An unknown error occurred.");
+  }
+});
+
+export const refreshTicket = createAsyncThunk("ticket/refresh", async () => {
+  try {
+    await titoRefresh();
+    return;
+  } catch (e) {
+    if (e.code) {
+      switch (e.code) {
+        case "permission-denied":
+          throw new Error(e.message);
+
+        case "not-found":
+          throw new Error(e.message);
+      }
+    }
+
+    throw new Error("An unknown error occurred.");
+  }
+});
+
+export const clearSearch = createAction("ticket/clearSearch");

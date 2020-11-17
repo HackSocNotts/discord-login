@@ -32,4 +32,6 @@ export type Ticket = {
   release_title: string;
   registration: Optional<Record<string, unknown>>;
   release: Optional<Record<string, unknown>>;
+  release_id: number;
+  unique_url: string;
 };

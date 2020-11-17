@@ -14,4 +14,7 @@ export interface FullProfile extends Profile {
   fullName: string;
   ticketSlug: string;
   email: string;
+  ticketUrl: string;
+  ticketReleaseTitle: string;
+  ticketReleaseId: number;
 }

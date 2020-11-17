@@ -8,6 +8,8 @@ import { userExists } from './users';
 const db = firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
+const { FieldValue } = firestore;
+
 export class UserExistsError extends Error {
   constructor(uid: string) {
     super(`User with UID ${uid} already exists.`);
@@ -62,7 +64,11 @@ export const getUser = async (uid: string): Promise<Partial<User>> => {
   }
 };
 
-export const updateUser = async (uid: string, partialUser: Partial<User>): Promise<Partial<User>> => {
+export const updateUser = async (
+  uid: string,
+  partialUser: Partial<User>,
+  doNotEcrypt = false,
+): Promise<Partial<User>> => {
   try {
     const userDoc = db.collection('users').doc(uid);
 
@@ -70,7 +76,40 @@ export const updateUser = async (uid: string, partialUser: Partial<User>): Promi
       throw new UserDoesNotExistError(uid);
     }
 
-    await userDoc.update(encryptUserData(partialUser));
+    if (doNotEcrypt) {
+      await userDoc.update(partialUser);
+    } else {
+      await userDoc.update(encryptUserData(partialUser));
+    }
+
+    const updatedUser = ((await userDoc.get()).data() as unknown) as Partial<User>;
+
+    return updatedUser;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const clearUser = async (uid: string): Promise<Partial<User>> => {
+  try {
+    const userDoc = db.collection('users').doc(uid);
+
+    if (!(await userDoc.get()).exists) {
+      throw new UserDoesNotExistError(uid);
+    }
+
+    await userDoc.update({
+      ticketReference: FieldValue.delete(),
+      ticketSlug: FieldValue.delete(),
+      phoneNumber: FieldValue.delete(),
+      email: FieldValue.delete(),
+      firstName: FieldValue.delete(),
+      lastName: FieldValue.delete(),
+      fullName: FieldValue.delete(),
+      ticketReleaseId: FieldValue.delete(),
+      ticketReleaseTitle: FieldValue.delete(),
+      ticketUrl: FieldValue.delete(),
+    });
 
     const updatedUser = ((await userDoc.get()).data() as unknown) as Partial<User>;
 

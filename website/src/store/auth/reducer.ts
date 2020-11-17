@@ -4,14 +4,21 @@ import {
   loginWithCustomToken,
   authError,
   updateProfile,
+  getAuthProfile,
 } from "./actions";
 import { createReducer } from "@reduxjs/toolkit";
 import { FullProfile } from "../../types/Profile";
+import { clearTicket } from "../ticket";
 
 export interface AuthState {
   loading: boolean;
   loggingIn: boolean;
   profile: Partial<FullProfile> | null;
+  authProfile: {
+    email: string | null;
+    phoneNumber: string | null;
+    fullName: string | null;
+  } | null;
   error: string | null;
   snapshotListener: (() => void) | null;
 }
@@ -20,6 +27,7 @@ const initialState: AuthState = {
   loading: false,
   loggingIn: false,
   profile: null,
+  authProfile: null,
   error: null,
   snapshotListener: null,
 };
@@ -58,11 +66,42 @@ const reducer = createReducer<AuthState>(initialState, (builder) =>
       loggingIn: false,
       error: error.message as string,
     }))
-    .addCase(updateProfile, (state, action) => ({
+    .addCase(updateProfile.fulfilled, (state, action) => ({
         ...state,
         profile: {
             ...action.payload,
         }
+    }))
+    .addCase(updateProfile.rejected, (state, {error}) => ({
+      ...state,
+      error: error.message as string,
+    }))
+    .addCase(getAuthProfile.pending, (state) => ({
+      ...state,
+      loading: true,
+    }))
+    .addCase(getAuthProfile.fulfilled, (state, action) => ({
+      ...state,
+      loading: false,
+      authProfile: action.payload,
+    }))
+    .addCase(getAuthProfile.rejected, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error: error.message as string,
+    }))
+    .addCase(clearTicket.pending, (state) => ({
+      ...state,
+      loading: true,
+    }))
+    .addCase(clearTicket.fulfilled, (state) => ({
+      ...state,
+      loading: false,
+    }))
+    .addCase(clearTicket.rejected, (state, { error }) => ({
+      ...state,
+      loading: false,
+      error: error.message as string,
     }))
 );
 

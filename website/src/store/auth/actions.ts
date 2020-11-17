@@ -3,10 +3,39 @@ import { FullProfile, Profile } from "../../types/Profile";
 import store from "../index";
 import { AuthState } from "./reducer";
 import { auth, db } from "../../firebase";
+import { getProfile } from "../../firebase/functions";
 
 export const authError = createAction<string>("auth/error");
-export const updateProfile = createAction<Partial<FullProfile>>(
-  "auth/updateProfile"
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (profile: Partial<FullProfile>, { dispatch }) => {
+    try {
+      if (profile.fullName || profile.email || profile.phoneNumber) {
+        dispatch(getAuthProfile());
+      }
+      return profile;
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getAuthProfile = createAsyncThunk(
+  "auth/getAuthProfile",
+  async () => {
+    try {
+      const res = await getProfile();
+      const data: {
+        email: string;
+        phoneNumber: string;
+        fullName: string;
+      } = res.data;
+
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  }
 );
 
 export const logoutUser = createAsyncThunk<
