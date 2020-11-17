@@ -1,5 +1,5 @@
 import { AccessTokenObject, InvalidCodeError } from '../types/Discord';
-import { createUser, storeAccessToken } from '../services/db';
+import { createUser, storeAccessToken, updateUser } from '../services/db';
 import { Request, Response } from 'firebase-functions';
 import { auth } from 'firebase-admin';
 import DiscordService from '../services/discord';
@@ -51,6 +51,7 @@ router.get('/return', async (req: Request, res: Response) => {
 
     if (exists) {
       await storeAccessToken(user.id, discordService.accessToken as AccessTokenObject);
+      await updateUser(user.id, { verificationStarted: false });
       const authToken = await auth().createCustomToken(user.id);
       return res.redirect('/?' + qs.stringify({ token: authToken }));
     }

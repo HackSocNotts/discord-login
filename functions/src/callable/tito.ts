@@ -72,6 +72,7 @@ export const confirmTicket = async (slug: string, context: CallableContext): Pro
       ticketReleaseId: ticket.release_id,
       ticketReleaseTitle: ticket.release_title,
       ticketUrl: ticket.unique_url,
+      verificationStarted: false,
     });
 
     await auth().updateUser(uid, {
@@ -125,6 +126,7 @@ export const refreshTicket = async (_: void, context: CallableContext): Promise<
       ticketReleaseId: ticket.release_id,
       ticketReleaseTitle: ticket.release_title,
       ticketUrl: ticket.unique_url,
+      verificationStarted: false,
     });
 
     await auth().updateUser(uid, {

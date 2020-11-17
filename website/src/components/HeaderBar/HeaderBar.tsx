@@ -15,7 +15,7 @@ const HeaderBar: React.FC = () => {
   const signOut = () => auth.signOut();
 
   return (
-    <AppBar position="relative" variant="outlined">
+    <AppBar position="sticky" variant="outlined">
       <Toolbar>
         <HackSocIcon className={classes.icon} color="inherit" />
         <Typography

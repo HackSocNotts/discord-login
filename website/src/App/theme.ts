@@ -3,7 +3,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 const HackSocTheme = createMuiTheme({
   palette: {
     primary: {
-      main: "#00953c",
+      main: "#e94d4d",
     },
   },
 });

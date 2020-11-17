@@ -17,4 +17,5 @@ export interface FullProfile extends Profile {
   ticketUrl: string;
   ticketReleaseTitle: string;
   ticketReleaseId: number;
+  verificationStarted: boolean;
 }

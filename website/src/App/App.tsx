@@ -11,6 +11,7 @@ import { useTypedSelector } from "../store";
 import LoginCard from "../components/LoginCard";
 import LookupCard from "../components/LookupCard";
 import TicketCard from "../components/TicketCard";
+import VerifyCard from "../components/VerifyCard";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           {!profile && <LoginCard />}
           {profile && !profile.ticketReference && <LookupCard />}
           {profile && profile.ticketReference && <TicketCard />}
+          {profile && profile.ticketReference && <VerifyCard />}
         </Container>
       </div>
       <Footer />

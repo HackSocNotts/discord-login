@@ -13,6 +13,7 @@ export interface User {
   ticketUrl: string;
   ticketReleaseTitle: string;
   ticketReleaseId: number;
+  verificationStarted: boolean;
 }
 
 export type EncryptedUser = User;
