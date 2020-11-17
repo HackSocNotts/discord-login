@@ -19,10 +19,16 @@ const LookupCard: React.FC = () => {
   const [reference, setReference] = useState("");
 
   const lookup = () => dispatch(lookupTicket({ email, reference }));
-  const clear = () => dispatch(clearSearch());
+  const clear = () => {
+    dispatch(clearSearch());
+    setEmail("");
+    setReference("");
+  };
   const confirm = ticket
     ? () => dispatch(confirmTicket(ticket.slug))
     : () => undefined;
+
+  const handleKeyUp = (e: React.KeyboardEvent) => e.key === "Enter" && lookup();
 
   return (
     <Card className={classes.root} variant="outlined">
@@ -57,14 +63,18 @@ const LookupCard: React.FC = () => {
             label="Email Address"
             required
             variant="outlined"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyUp={handleKeyUp}
           />
           <TextField
             label="Ticket Reference"
             placeholder="ABCD-1"
             required
             variant="outlined"
+            value={reference}
             onChange={(e) => setReference(e.target.value)}
+            onKeyUp={handleKeyUp}
           />
         </CardContent>
       )}
