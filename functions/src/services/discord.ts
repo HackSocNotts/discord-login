@@ -107,6 +107,8 @@ class DiscordService {
       scope: this.serializeScopes(),
     };
 
+    console.debug('request_data', requestData);
+
     const config: AxiosRequestConfig = {
       headers: {
         'Content-type': 'application/x-www-form-urlencoded',
@@ -152,7 +154,7 @@ class DiscordService {
     }
   }
 
-  public async enroll(): Promise<void> {
+  public async enroll(): Promise<boolean> {
     if (!this.accessToken) {
       throw new NoAccessTokenError();
     }
@@ -161,7 +163,7 @@ class DiscordService {
       const profile = await this.getProfile();
 
       const requestData = {
-        access_token: this.accessToken,
+        access_token: this.accessToken.access_token,
       };
 
       const config: AxiosRequestConfig = {
@@ -172,9 +174,15 @@ class DiscordService {
 
       const url = `/guilds/${this.guildId}/members/${profile.id}`;
 
-      await this.instance.put(url, requestData, config);
+      const { status } = await this.instance.put(url, requestData, config);
 
-      return;
+      if (status === 201) {
+        return true;
+      } else if (status === 204) {
+        return false;
+      } else {
+        throw new Error('An unknown error occurred. Please try again later.');
+      }
     } catch (e) {
       throw e;
     }

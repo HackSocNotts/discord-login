@@ -1,5 +1,6 @@
 import { CallableContext, HttpsError } from 'firebase-functions/lib/providers/https';
-import { getAccessToken, getUser } from '../services/db';
+import { getAccessToken, getUser, storeAccessToken } from '../services/db';
+import { AccessTokenObject } from '../types/Discord';
 import { config } from 'firebase-functions';
 import DiscordService from '../services/discord';
 import TitoService from '../services/tito';
@@ -26,6 +27,7 @@ export const joinServer = async (_: void, context: CallableContext): Promise<voi
     const discordService = new DiscordService(accessToken);
 
     await discordService.refreshToken();
+    await storeAccessToken(uid, discordService.accessToken as AccessTokenObject);
 
     if (process.env.FUNCTIONS_EMULATOR) {
       const titoInstance = new TitoService(config().tito.token, config().tito.organization, config().tito.event);
@@ -34,14 +36,18 @@ export const joinServer = async (_: void, context: CallableContext): Promise<voi
       }
     }
 
-    await discordService.enroll();
+    const added = await discordService.enroll();
 
-    return;
+    if (added) {
+      return;
+    }
+
+    throw new HttpsError('already-exists', 'User is already on the server.');
   } catch (e) {
     if (e instanceof HttpsError) {
       throw e;
     }
     console.error(e);
-    throw new HttpsError('internal', e.getMessage());
+    throw new HttpsError('internal', e.message);
   }
 };
