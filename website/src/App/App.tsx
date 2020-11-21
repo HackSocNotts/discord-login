@@ -13,6 +13,7 @@ import LookupCard from "../components/LookupCard";
 import TicketCard from "../components/TicketCard";
 import VerifyCard from "../components/VerifyCard";
 import DiscordCard from "../components/DiscordCard/DiscordCard";
+import Help from "../components/Help";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -32,6 +33,7 @@ const App: React.FC = () => {
           {profile && profile.ticketReference && profile.verified && (
             <DiscordCard />
           )}
+          {profile && <Help />}
         </Container>
       </div>
       <Footer />
