@@ -9,6 +9,7 @@ import { AppDispatch, useTypedSelector } from "../../store";
 import { useDispatch } from "react-redux";
 import SendIcon from "@material-ui/icons/Send";
 import { startVerify, verifyWithCode } from "../../store/verify";
+import TwilioIcon from "../../Icons/TwilioIcon";
 
 const VerifyCard: React.FC = () => {
   const classes = useStyles();
@@ -27,7 +28,13 @@ const VerifyCard: React.FC = () => {
   return (
     <Card className={classes.root} variant="outlined">
       {loading && <LinearProgress />}
-      <CardHeader title="Phone Verification" />
+      <CardHeader
+        title={
+          <>
+            Phone Verification powered by <TwilioIcon />
+          </>
+        }
+      />
       {error && <CardContent className={classes.error}>{error}</CardContent>}
       <CardContent>
         {profile && !profile.verified && (
