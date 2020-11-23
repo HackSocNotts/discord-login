@@ -12,7 +12,7 @@ import LoginCard from "../components/LoginCard";
 import LookupCard from "../components/LookupCard";
 import TicketCard from "../components/TicketCard";
 import VerifyCard from "../components/VerifyCard";
-import DiscordCard from "../components/DiscordCard/DiscordCard";
+import DiscordCard from "../components/DiscordCard";
 import Help from "../components/Help";
 
 const App: React.FC = () => {

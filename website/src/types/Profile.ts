@@ -18,4 +18,5 @@ export interface FullProfile extends Profile {
   ticketReleaseTitle: string;
   ticketReleaseId: number;
   verificationStarted: boolean;
+  enrolled?: boolean;
 }

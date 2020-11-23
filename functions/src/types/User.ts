@@ -14,6 +14,7 @@ export interface User {
   ticketReleaseTitle: string;
   ticketReleaseId: number;
   verificationStarted: boolean;
+  enrolled?: boolean;
 }
 
 export type EncryptedUser = User;

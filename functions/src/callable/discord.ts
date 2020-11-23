@@ -1,5 +1,5 @@
 import { CallableContext, HttpsError } from 'firebase-functions/lib/providers/https';
-import { getAccessToken, getUser, storeAccessToken } from '../services/db';
+import { getAccessToken, getUser, storeAccessToken, updateUser } from '../services/db';
 import { AccessTokenObject } from '../types/Discord';
 import { config } from 'firebase-functions';
 import DiscordService from '../services/discord';
@@ -37,6 +37,10 @@ export const joinServer = async (_: void, context: CallableContext): Promise<voi
     }
 
     const added = await discordService.enroll();
+
+    await updateUser(uid, {
+      enrolled: true,
+    });
 
     if (added) {
       return;
