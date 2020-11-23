@@ -26,7 +26,7 @@ class DiscordService {
     this.clientSecret = config().discord.client_secret;
     this.botToken = config().discord.bot_token;
     this.guildId = config().discord.guild_id;
-    this.scopes = ['identify', 'guilds.join'];
+    this.scopes = ['identify'];
     this.instance = axios.create({
       baseURL: 'https://discord.com/api/v6',
       timeout: 1000,
@@ -178,11 +178,9 @@ class DiscordService {
 
       if (status === 201) {
         return true;
-      } else if (status === 204) {
-        return false;
-      } else {
-        throw new Error('An unknown error occurred. Please try again later.');
       }
+
+      return false;
     } catch (e) {
       throw e;
     }

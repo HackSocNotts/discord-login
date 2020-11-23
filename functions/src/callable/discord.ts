@@ -51,7 +51,12 @@ export const joinServer = async (_: void, context: CallableContext): Promise<voi
     if (e instanceof HttpsError) {
       throw e;
     }
+    console.error('callable/discord 50:', e.isAxiosError, e.response.data);
+    if (e.isAxiosError === true) {
+      const { data } = e.response;
+      throw new HttpsError('unavailable', `An error occurred: ${data.message} Code: ${data.code}.`);
+    }
     console.error(e);
-    throw new HttpsError('internal', e.message);
+    throw new HttpsError('unavailable', e);
   }
 };

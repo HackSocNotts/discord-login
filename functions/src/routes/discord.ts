@@ -47,7 +47,6 @@ router.get('/return', async (req: Request, res: Response) => {
   try {
     await discordService.getAccessToken(req.query.code as string);
     const user = await discordService.getProfile();
-    console.log(user);
     const exists = await userExists(user.id);
 
     if (exists) {

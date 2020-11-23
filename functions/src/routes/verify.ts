@@ -27,7 +27,6 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     if (!user.phoneNumber) {
-      console.log(user);
       return res.status(StatusCodes.FORBIDDEN).json({ error: true, message: 'No ticket assigned to user' });
     }
 
