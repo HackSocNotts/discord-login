@@ -39,6 +39,8 @@ export const confirmTicket = createAsyncThunk(
       switch (e.code) {
         case "not-found":
           throw new Error(e.message);
+        case "invalid-argument":
+          throw new Error(e.message);
       }
 
       throw new Error("An unknown error occurred.");
@@ -61,7 +63,7 @@ export const clearTicket = createAsyncThunk("ticket/clear", async () => {
       }
     }
 
-    throw new Error("An unknown error occurred.");
+    throw new Error(e.message);
   }
 });
 
