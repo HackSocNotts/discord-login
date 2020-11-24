@@ -1,4 +1,6 @@
-export const sanitizePhone = (phoneNumber: string): string => {
+import { validatePhoneNumber } from '../services/twilio';
+
+export const sanitizePhone = async (phoneNumber: string): Promise<string> => {
   const trimmedPhoneNumber = phoneNumber.replace(/\s/g, '');
 
   if (trimmedPhoneNumber.substr(0, 1) === '+') {
@@ -9,5 +11,14 @@ export const sanitizePhone = (phoneNumber: string): string => {
     return `+44${trimmedPhoneNumber.substr(1)}`;
   }
 
-  throw new Error('Invalid Phone Number. Must be E.164 Formatted');
+  try {
+    const fixedNumber = `+${trimmedPhoneNumber}`;
+    if ((await validatePhoneNumber(fixedNumber)) === fixedNumber) {
+      return fixedNumber;
+    }
+
+    throw new Error('Invalid Phone Number. Must be E.164 Formatted');
+  } catch (e) {
+    throw new Error('Invalid Phone Number. Must be E.164 Formatted');
+  }
 };

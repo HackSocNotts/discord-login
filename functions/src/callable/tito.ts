@@ -46,7 +46,7 @@ export const lookup = async ({ reference, email }: { email: string; reference: s
       throw e;
     }
     console.error(e);
-    throw new HttpsError('internal', e.getMessage());
+    throw new HttpsError('internal', e);
   }
 };
 
@@ -80,7 +80,7 @@ export const confirmTicket = async (slug: string, context: CallableContext): Pro
     await auth().updateUser(uid, {
       email: ticket.email,
       displayName: ticket.name,
-      phoneNumber: sanitizePhone(ticket.phoneNumber),
+      phoneNumber: await sanitizePhone(ticket.phoneNumber),
     });
 
     return;
@@ -93,8 +93,15 @@ export const confirmTicket = async (slug: string, context: CallableContext): Pro
       throw new HttpsError('not-found', 'Invalid ticket slug');
     }
 
+    if (e.message === 'Invalid Phone Number. Must be E.164 Formatted') {
+      throw new HttpsError(
+        'invalid-argument',
+        'The phone number on your ticket appears to be invalid. Please ensure that your phone number starts with its country code, or a 0 if it is a UK number.\nIf you are entering a UK number, do not include the 0 and 44.\nYou can update your ticket by clicking the link marked "ticket" below.',
+      );
+    }
+
     console.error(e);
-    throw new HttpsError('internal', e.getMessage());
+    throw new HttpsError('internal', e);
   }
 };
 
@@ -134,7 +141,7 @@ export const refreshTicket = async (_: void, context: CallableContext): Promise<
     await auth().updateUser(uid, {
       email: ticket.email,
       displayName: ticket.name,
-      phoneNumber: sanitizePhone(ticket.phoneNumber),
+      phoneNumber: await sanitizePhone(ticket.phoneNumber),
     });
 
     return;
@@ -148,7 +155,7 @@ export const refreshTicket = async (_: void, context: CallableContext): Promise<
     }
 
     console.error(e);
-    throw new HttpsError('internal', e.getMessage());
+    throw new HttpsError('internal', e);
   }
 };
 

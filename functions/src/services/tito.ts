@@ -56,7 +56,7 @@ class TitoService {
 
       return {
         ...response.data.ticket,
-        phoneNumber: sanitizePhone(response.data.ticket.responses['phone-number']),
+        phoneNumber: await sanitizePhone(response.data.ticket.responses['phone-number']),
       };
     } catch (e) {
       throw e;
