@@ -85,8 +85,6 @@ const LookupCard: React.FC = () => {
             <dd>{ticket.name}</dd>
             <dt>Email Address</dt>
             <dd>{ticket.email}</dd>
-            <dt>Phone Number</dt>
-            <dd>{ticket.phone_number}</dd>
             <dt>Ticket Type</dt>
             <dd>{ticket.release_title}</dd>
           </dl>
