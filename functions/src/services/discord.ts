@@ -26,7 +26,7 @@ class DiscordService {
     this.clientSecret = config().discord.client_secret;
     this.botToken = config().discord.bot_token;
     this.guildId = config().discord.guild_id;
-    this.scopes = ['identify'];
+    this.scopes = ['identify', 'guilds.join'];
     this.instance = axios.create({
       baseURL: 'https://discord.com/api/v6',
       timeout: 1000,
