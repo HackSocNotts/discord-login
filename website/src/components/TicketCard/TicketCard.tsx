@@ -62,7 +62,7 @@ const TicketCard: React.FC = () => {
         </CardContent>
       )}
       <CardActions>
-        {profile && (
+        {profile && !profile.enrolled && (
           <>
             <Button size="small" disabled={loading} onClick={refresh}>
               Refresh
