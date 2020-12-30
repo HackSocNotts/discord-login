@@ -1,6 +1,6 @@
 import { AccessTokenObject, InvalidCodeError } from '../types/Discord';
-import { createUser, storeAccessToken, updateUser } from '../services/db';
-import { Request, Response } from 'firebase-functions';
+import { config, Request, Response } from 'firebase-functions';
+import { createUser, getVerifiedUsers, storeAccessToken, updateUser } from '../services/db';
 import { auth } from 'firebase-admin';
 import DiscordService from '../services/discord';
 import qs from 'querystring';
@@ -69,6 +69,29 @@ router.get('/return', async (req: Request, res: Response) => {
       console.error(e);
       return res.status(500).send('Unknown Error Occurred').end();
     }
+  }
+});
+
+router.get('/checkins', async (req: Request, res: Response) => {
+  if (!req.query.code) {
+    console.debug('No code provided for checkin route');
+    return res.status(StatusCodes.BAD_REQUEST).send('Authorization code is missing').end();
+  }
+
+  if (req.query.code !== config().app.checkin_code) {
+    return res.status(StatusCodes.UNAUTHORIZED).send('Incorrect authorization code').end();
+  }
+
+  try {
+    const users = await getVerifiedUsers();
+    const usersCSV = users.reduce(
+      (acc, val) => `${acc}${val.uid},${val.ticketReference}\n`,
+      'Discord Snowflake, Ticket Reference\n',
+    );
+
+    return res.contentType('text/csv').send(usersCSV).end();
+  } catch (e) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e).end();
   }
 });
 
