@@ -64,6 +64,20 @@ export const getUser = async (uid: string): Promise<Partial<User>> => {
   }
 };
 
+export const getVerifiedUsers = async (): Promise<Pick<User, 'ticketReference' | 'uid'>[]> => {
+  try {
+    const documents = await db.collection('users').where('verified', '==', true).get();
+
+    const users: Pick<User, 'ticketReference' | 'uid'>[] = documents.docs
+      .map((doc) => doc.data() as User)
+      .map((data) => ({ uid: data.uid, ticketReference: data.ticketReference }));
+
+    return users;
+  } catch (e) {
+    throw e;
+  }
+};
+
 export const updateUser = async (
   uid: string,
   partialUser: Partial<User>,
